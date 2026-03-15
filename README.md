@@ -1,145 +1,153 @@
-# 🇳🇴 Tilfluktsrom – Interaktivt Webkart
+# GIS Beredskapskart – Evakuering av skoleelever
+Gruppe 2
+Oskar Kirkbride, Elise Fjeldstad, Emma Wolden, Helle Aanonsen, Karoline Aas-Mehren, Milana Dubkova.
 
-## TL;DR
-Dette prosjektet er et interaktivt webkart bygget med Leaflet som visualiserer offentlige tilfluktsrom i Norge. Løsningen kombinerer statiske GeoJSON-data med eksterne OGC WMS-tjenester fra Kartverket, og implementerer romlig filtrering og nærmeste-nabo-analyse direkte i nettleseren ved hjelp av Turf.js. Prosjektet demonstrerer håndtering av koordinatsystemer, datatransformasjon og klientbasert romlig analyse.
+## Problemstilling og TLDR
 
----
+Hvordan kan geografiske analyser brukes til å vurdere beredskap og evakueringsmuligheter for skoleelever i Norge?
 
-## 🎬 Demo av system
-*(Legg inn GIF eller video her)*
+Prosjektet undersøker nærhet mellom skoler, tilfluktsrom og nødetater gjennom et interaktivt webkart som utfører romlig analyse direkte mot en PostGIS-database.
 
-Eksempel:
-- Slå av/på lag
-- Klikk i kartet → se radius-filter
-- Se liste over tilfluktsrom innen radius
-- Se avstand til nærmeste tilfluktsrom
+Prosjektet er laget som en IT-faglig case for å demonstrere bruk av webkart, romlige databaser og GIS-analyse i praksis.
+
 
 ---
 
-## 🧱 Teknisk Stack
+## Demo
 
-| Teknologi | Versjon | Bruksområde |
-|-----------|----------|-------------|
-| Leaflet | 1.9.x | Kartbibliotek |
-| Turf.js | 6.x | Romlig analyse i nettleser |
-| Kartverket WMS | OGC WMS | Eksternt kartlag |
-| GeoJSON | – | Statisk datasett |
+![Demo av webkartet](docs/Demo.gif)
 
 ---
 
-## 📊 Datakatalog
+## System Architecture
+
+Brukerinteraksjon:
+1. Bruker klikker i kartet
+2. Frontend sender koordinater til Supabase RPC
+3. PostGIS utfører:
+ - nearest analyse
+ - radius-søk
+4. Resultat returneres som GeoJSON
+5. Kart og analysepanel oppdateres
+
+Systemet kombinerer:
+ - statiske datasett (GeoJSON)
+ - eksterne OGC-tjenester (Kartverket WMS)
+ - romlig database (PostGIS)
+
+---
+
+## Teknisk stack
+
+| Teknologi | Rolle |
+|-----------|------|
+| Leaflet 1.9 | Webkart |
+| Supabase | Backend / PostGIS |
+| PostGIS | Spatial analyse |
+| GeoJSON | Statisk GIS-data |
+| Kartverket WMS | Ekstern OGC tjeneste |
+| Overpass / OSM | Beredskapsressurser |
+| VS Code | Utviklingsmiljø |
+| GitHub | Versjonskontroll |
+
+---
+
+## Spatial analyse
+
+Romlig analyse utføres på to nivåer:
+
+### Frontend (Leaflet)
+- Nearest-analyse for skoler og nødetater basert på GeoJSON
+- Radiusfiltering av lokale datasett
+
+### Backend (PostGIS i Supabase)
+- SQL-funksjon for å finne nærmeste tilfluktsrom
+- SQL-funksjon for å finne alle tilfluktsrom innen radius
+
+Dette viser hvordan spatial analyse kan flyttes fra klient til database for bedre ytelse og skalerbarhet.
+
+---
+
+## Datakatalog
 
 | Datasett | Kilde | Format | Bearbeiding |
-|-----------|--------|---------|-------------|
-| Tilfluktsrom (hele Norge) | GeoNorge / DSB | GeoJSON | Kontroll av koordinatsystem (CRS84 / EPSG:4326) |
-| Topografisk bakgrunnskart | Kartverket | OGC WMS | Lastet direkte som WMS-layer |
+|---------|------|-------|-------------|
+| Offentlige tilfluktsrom | GeoNorge | PostGIS | Importert til Supabase og brukt i spatial SQL |
+| Grunnskoler | GeoNorge | GeoJSON | Filtrert og visualisert statisk |
+| Videregående skoler | GeoNorge | GeoJSON | Visualisert statisk |
+| Sivilforsvarsdistrikter | GeoNorge | GeoJSON | Polygonlag |
+| Nødetater (politi, brann, sykehus) | OpenStreetMap | GeoJSON | Hentet via Overpass |
+| Fjellskygge WMS | Kartverket | WMS | Ekstern OGC overlay |
+| Topo4 WMS | Kartverket | WMS | Ekstern OGC overlay |
 
 ---
 
-## 🗺 Arkitektur / Dataflyt
+## Funksjonalitet
 
-GeoJSON (statisk fil)
-↓
-Fetch i app.js
-↓
-Leaflet GeoJSON-layer
-↓
-Brukerinteraksjon (klikk i kart)
-↓
-Turf.js romlig analyse
+Kartet lar brukeren:
 
-Filtrering innen radius
-
-Nærmeste tilfluktsrom
-↓
-Oppdatering av kart (layers, markører, linjer)
-↓
-Oppdatering av UI (resultatliste og avstand)
-
-
-
-
-### Forklaring
-
-Applikasjonen laster tilfluktsrom som en statisk GeoJSON-fil og visualiserer dem i Leaflet.  
-Kartet integrerer også eksterne OGC WMS-tjenester fra Kartverket.
-
-Ved klikk i kartet utføres romlig analyse direkte i nettleseren ved hjelp av Turf.js:
-
-- Punkter filtreres innenfor en definert radius.
-- Nærmeste tilfluktsrom beregnes ved hjelp av avstandsfunksjon.
-- Resultatene visualiseres dynamisk både i kartet og i et sidepanel.
+- Klikke i kartet for å analysere beredskap i området
+- Se alle ressurser innenfor en radius på 5 km
+- Få beregnet nærmeste:
+  - tilfluktsrom
+  - grunnskole
+  - videregående skole
+  - beredskapsressurs (politi, brann eller sykehus)
+- Visualisere avstand med linje i kartet
+- Tooltip og popup på alle objekter
+- Slå av/på datalag med Layer Control
+- Panel med analyseresultat
 
 ---
 
-## 🌍 Koordinatsystemer
+## Arkitektur
+- GeoJSON → Leaflet
+- WMS → kartoverlay
+- Kartklikk → Supabase RPC → PostGIS analyse
+- Resultat → visualisering i kart og panel
 
-Datasettet er levert i CRS84 (tilsvarende WGS84 / EPSG:4326), som er kompatibelt med webkart og Leaflet.
+## Refleksjon og forbedringspunkter
+- Systemet bruker en fast radius og kunne hatt dynamisk radiusvalg
+- Flere analyser kunne vært flyttet til PostGIS for bedre ytelse
+- Nettverksanalyse (rute langs vei) kunne gitt mer realistiske avstander
+- UI kan forbedres med bedre layout og responsivt design
+- Datasett kan oppdateres dynamisk via API i stedet for statiske filer
 
-Tidligere versjoner av datasettet var levert i UTM (EPSG:25832/25833), og ble reprojisert i QGIS til EPSG:4326 for korrekt bruk i webapplikasjonen.
-
-Leaflet opererer internt med Web Mercator (EPSG:3857) for visning, mens GeoJSON-dataene benytter lon/lat i grader.
-
----
-
-## 🔍 Implementert funksjonalitet
-
-- Visualisering av alle tilfluktsrom i Norge
-- Datadrevet styling basert på kapasitet (antall plasser)
-- Eksternt OGC WMS-lag fra Kartverket
-- Layer control (av/på-funksjon)
-- Romlig filtrering innen valgt radius
-- Beregning av avstand til nærmeste tilfluktsrom
-- Dynamisk resultatliste
-
----
-
-## 🧠 Refleksjon og forbedringspunkter
-
-- Applikasjonen utfører all romlig analyse klientbasert. Ved svært store datasett kunne ytelsen forbedres ved bruk av server-side spørringer (f.eks. PostGIS).
-- Marker clustering kunne forbedret lesbarheten ved zoomet ut visning.
-- Radius-verdi kunne vært gjort dynamisk via slider/input.
-- WMS-laget kunne vært supplert med flere temalag.
-- UI kan videreutvikles for bedre mobiltilpasning.
+## Begrensninger
+- Analyse baserer seg på luftlinjeavstand
+- Kapasitetsdata for tilfluktsrom er teoretiske
+- Private tilfluktsrom er ikke inkludert
+- Evakueringstid påvirkes av trafikk og organisering
+- Datasettene er statiske øyeblikksbilder
 
 ---
 
-## 🚀 Videre utvikling
+## Kjoring lokalt
 
-Mulige forbedringer:
-- Implementere søk på adresse eller kommune
-- Integrere Supabase/PostGIS for dynamiske SQL-spørringer
-- Implementere vektorbaserte kart (MapLibre)
-- Lage mer avansert romlig analyse (f.eks. dekningsanalyse)
+1. Klon repoet
 
----
+2. Lag config.js med Supabase-nøkler
 
-## 📌 Prosjektkrav – Oppfyllelse
+3. Start lokal server:
 
-✔ Leaflet brukt som kartbibliotek  
-✔ GeoJSON som statisk datakilde  
-✔ Eksternt OGC API (Kartverket WMS)  
-✔ Klikkbare objekter med popup  
-✔ Datadrevet styling  
-✔ Layer control  
-✔ Minst én romlig filtrering (radius + nearest)  
+npx live-server
+
+4. Åpne nettleser på localhost
 
 ---
 
-## 📂 Struktur
-webkart-oppgave1/
-│
-├── index.html
-├── style.css
-├── app.js
-└── data/
-└── mine_data2.geojson
+## Oppdatere beredskapsdata (Overpass)
 
+Kjor scriptet:
 
----
+```powershell
+python scripts/overpass_data.py
+```
 
-## 👨‍💻 Forfatter
+Output skrives til:
 
-Karoline Aas-Mehren
-IS-218 – GIS, KI og IoT
+- [data/emergency_resources_police.geojson](data/emergency_resources_police.geojson)
+- [data/emergency_resources_fire.geojson](data/emergency_resources_fire.geojson)
+- [data/emergency_resources_hospital.geojson](data/emergency_resources_hospital.geojson)
+
 
