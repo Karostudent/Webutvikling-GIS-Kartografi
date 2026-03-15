@@ -1,15 +1,37 @@
 # GIS Beredskapskart – Evakuering av skoleelever
 
-## TLDR
-Dette webkartet analyserer beredskap i Norge ved å vise nærmeste tilfluktsrom, skoler og nødetater fra et valgt punkt i kartet.  
-Systemet kombinerer statiske GIS-filer, eksterne OGC-tjenester og en romlig database (PostGIS i Supabase).  
-Brukeren kan utføre romlig analyse som radius-søk og nearest-beregninger direkte i nettleseren.
+## Problemstilling og TLDR
+
+Hvordan kan geografiske analyser brukes til å vurdere beredskap og evakueringsmuligheter for skoleelever i Norge?
+
+Prosjektet undersøker nærhet mellom skoler, tilfluktsrom og nødetater gjennom et interaktivt webkart som utfører romlig analyse direkte mot en PostGIS-database.
+
+Prosjektet er laget som en IT-faglig case for å demonstrere bruk av webkart, romlige databaser og GIS-analyse i praksis.
+
 
 ---
 
 ## Demo
 
 ![Demo av webkartet](docs/Demo.gif)
+
+---
+
+## System Architecture
+
+Brukerinteraksjon:
+1. Bruker klikker i kartet
+2. Frontend sender koordinater til Supabase RPC
+3. PostGIS utfører:
+ - nearest analyse
+ - radius-søk
+4. Resultat returneres som GeoJSON
+5. Kart og analysepanel oppdateres
+
+Systemet kombinerer:
+ - statiske datasett (GeoJSON)
+ - eksterne OGC-tjenester (Kartverket WMS)
+ - romlig database (PostGIS)
 
 ---
 
@@ -25,6 +47,22 @@ Brukeren kan utføre romlig analyse som radius-søk og nearest-beregninger direk
 | Overpass / OSM | Beredskapsressurser |
 | VS Code | Utviklingsmiljø |
 | GitHub | Versjonskontroll |
+
+---
+
+## Spatial analyse
+
+Romlig analyse utføres på to nivåer:
+
+### Frontend (Leaflet)
+- Nearest-analyse for skoler og nødetater basert på GeoJSON
+- Radiusfiltering av lokale datasett
+
+### Backend (PostGIS i Supabase)
+- SQL-funksjon for å finne nærmeste tilfluktsrom
+- SQL-funksjon for å finne alle tilfluktsrom innen radius
+
+Dette viser hvordan spatial analyse kan flyttes fra klient til database for bedre ytelse og skalerbarhet.
 
 ---
 
@@ -54,25 +92,9 @@ Kartet lar brukeren:
   - videregående skole
   - beredskapsressurs (politi, brann eller sykehus)
 - Visualisere avstand med linje i kartet
+- Tooltip og popup på alle objekter
 - Slå av/på datalag med Layer Control
-- Se attributtdata via popup og tooltip
-- Se datadrevet styling basert på kapasitet i tilfluktsrom
-
----
-
-## Spatial analyse
-
-Romlig analyse utføres på to nivåer:
-
-### Frontend (Leaflet)
-- Nearest-analyse for skoler og nødetater basert på GeoJSON
-- Radiusfiltering av lokale datasett
-
-### Backend (PostGIS i Supabase)
-- SQL-funksjon for å finne nærmeste tilfluktsrom
-- SQL-funksjon for å finne alle tilfluktsrom innen radius
-
-Dette viser hvordan spatial analyse kan flyttes fra klient til database for bedre ytelse og skalerbarhet.
+- Panel med analyseresultat
 
 ---
 
@@ -98,24 +120,19 @@ Dette viser hvordan spatial analyse kan flyttes fra klient til database for bedr
 
 ---
 
-## Problemstilling
-Hvordan kan et webbasert GIS-system brukes til å analysere beredskap for evakuering av skoleelever til nærmeste tilfluktsrom og nødetater i en krisesituasjon?
-
-Prosjektet er laget som en IT-faglig case for å demonstrere bruk av webkart, romlige databaser og GIS-analyse i praksis.
-
-
 ## Kjoring lokalt
 
-1. Start en enkel lokal server i prosjektroten.
-2. Apne [index.html](index.html) via server-URL (ikke direkte file://).
+1. Klon repoet
 
-Eksempel med Python:
+2. Lag config.js med Supabase-nøkler
 
-```powershell
-python -m http.server 8000
-```
+3. Start lokal server:
 
-Deretter apner du http://localhost:8000/
+npx live-server
+
+4. Åpne nettleser på localhost
+
+---
 
 ## Oppdatere beredskapsdata (Overpass)
 
