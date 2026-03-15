@@ -15,7 +15,7 @@ html, body {
 
 .panel-stack {
   position: absolute;
-  top: 320px;
+  bottom: 12px;
   right: 12px;
   z-index: 1000;
 
@@ -25,7 +25,7 @@ html, body {
   align-items: stretch;
 
   width: min(340px, calc(100vw - 24px));
-  max-height: calc(100vh - 340px);
+  max-height: calc(100vh - 400px);
 }
 
 /* ---------- Felles panel-stil ---------- */
@@ -100,4 +100,104 @@ html, body {
 
 .leaflet-tooltip-top:before {
   border-top-color: rgba(30, 30, 30, 0.92);
+}
+
+
+.layers-legend {
+  margin-top: 10px;
+  padding-top: 10px;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-bottom: 6px;
+  border-top: 1px solid #ccc;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.layers-legend-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.leaflet-control-layers {
+  max-width: 280px;
+}
+
+.leaflet-control-layers-expanded {
+  padding: 10px 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.dot,
+.line-symbol,
+.circle-symbol {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+}
+
+/* Tilfluktsrom */
+.shelter-small {
+  background: #fde047;
+}
+
+.shelter-medium {
+  background: #f59e0b;
+}
+
+.shelter-large {
+  background: #b45309;
+}
+
+/* Beredskap */
+
+.police {
+  background: #3b82f6;
+}
+
+.fire {
+  background: #ef4444;
+}
+
+.hospital {
+  background: #22c55e;
+}
+
+.school {
+  background: #df68cf;
+}
+
+.vgs {
+  background: #8e44ad;
+}
+
+.nearest {
+  background: #ffd54f;
+  border: 2px solid #111;
+}
+
+.line-symbol {
+  width: 22px;
+  height: 0;
+  border-top: 3px dashed #111;
+}
+
+.circle-symbol {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #3388ff;
+  border-radius: 50%;
+  background: rgba(51, 136, 255, 0.15);
 }

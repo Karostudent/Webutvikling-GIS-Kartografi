@@ -16,7 +16,7 @@ const sbClient =
 
 const START_CENTER = [58.15, 8.0];
 const START_ZOOM = 11;
-const RADIUS_METERS = 10000;
+const RADIUS_METERS = 5000;
 
 /******************************************************
  * KARTOPPSETT
@@ -72,12 +72,29 @@ function styleAll() {
 
 function styleFromPlasser(plasser) {
   if (plasser < 100) {
-    return { radius: 5, color: "#2c7bb6", fillColor: "#2c7bb6", fillOpacity: 0.8 };
+    return {
+      radius: 5,
+      color: "#ca8a04",
+      fillColor: "#fde047",
+      fillOpacity: 0.9
+    };
   }
+
   if (plasser <= 300) {
-    return { radius: 7, color: "#fdae61", fillColor: "#fdae61", fillOpacity: 0.8 };
+    return {
+      radius: 7,
+      color: "#b45309",
+      fillColor: "#f59e0b",
+      fillOpacity: 0.9
+    };
   }
-  return { radius: 9, color: "#d7191c", fillColor: "#d7191c", fillOpacity: 0.8 };
+
+  return {
+    radius: 9,
+    color: "#78350f",
+    fillColor: "#b45309",
+    fillOpacity: 0.95
+  };
 }
 
 function emergencyLabel(type) {
@@ -176,6 +193,69 @@ function addTooltipAndHover(layer, tooltipText, growBy = 2) {
     }
   });
 }
+
+function addLegendToLayerControl() {
+  const controlContainer = document.querySelector(".leaflet-control-layers");
+  if (!controlContainer) return;
+
+  // Fjern gammel legend hvis den finnes
+  const oldLegend = controlContainer.querySelector(".layers-legend");
+  if (oldLegend) oldLegend.remove();
+
+  const legendHtml = `
+    <div class="layers-legend">
+      <div class="layers-legend-title">Tegnforklaring</div>
+
+      <div class="legend-item">
+        <span class="dot shelter-small"></span> Tilfluktsrom (små)
+      </div>
+      <div class="legend-item">
+        <span class="dot shelter-medium"></span> Tilfluktsrom (middels)
+      </div>
+      <div class="legend-item">
+        <span class="dot shelter-large"></span> Tilfluktsrom (store)
+      </div>
+
+      <hr>
+
+      <div class="legend-item">
+        <span class="dot police"></span> Politi
+      </div>
+      <div class="legend-item">
+        <span class="dot fire"></span> Brannstasjon
+      </div>
+      <div class="legend-item">
+        <span class="dot hospital"></span> Sykehus
+      </div>
+
+      <hr>
+
+      <div class="legend-item">
+        <span class="dot school"></span> Grunnskole
+      </div>
+      <div class="legend-item">
+        <span class="dot vgs"></span> Videregående
+      </div>
+
+      <hr>
+
+      <div class="legend-item">
+        <span class="dot nearest"></span> Nærmeste tilfluktsrom
+      </div>
+      <div class="legend-item">
+        <span class="line-symbol"></span> Avstandslinje
+      </div>
+      <div class="legend-item">
+        <span class="circle-symbol"></span> Analyseområde (radius)
+      </div>
+    </div>
+  `;
+
+  controlContainer.insertAdjacentHTML("beforeend", legendHtml);
+}
+
+setTimeout(addLegendToLayerControl, 0);
+
 
 /******************************************************
  * GLOBALE VARIABLER
@@ -310,6 +390,8 @@ const emergencyFilteredLayer = L.geoJSON(null, {
 });
 layerControl.addOverlay(emergencyFilteredLayer, "Beredskap (innen radius)");
 
+
+
 /******************************************************
  * DATA: TILFLUKTSROM (STATISK)
  ******************************************************/
@@ -321,7 +403,17 @@ fetch("data/Offentlige_Tilfluktsrom.geojson")
   })
   .then((data) => {
     const allLayer = L.geoJSON(data, {
-      pointToLayer: (feature, latlng) => L.circleMarker(latlng, styleAll()),
+      pointToLayer: (feature, latlng) => {
+  const plasser = Number(feature?.properties?.plasser);
+  const baseStyle = styleFromPlasser(plasser);
+
+  return L.circleMarker(latlng, {
+    ...baseStyle,
+    radius: Math.max(baseStyle.radius - 2, 3),
+    fillOpacity: 0.35,
+    weight: 1
+  });
+},
       onEachFeature: (feature, layer) => {
         const p = feature.properties || {};
         const kategori = categoryFromPlasser(Number(p.plasser));
@@ -366,8 +458,8 @@ fetch("data/Grunnskoler.geojson")
       pointToLayer: (feature, latlng) =>
         L.circleMarker(latlng, {
           radius: 5,
-          color: "#1a7e40",
-          fillColor: "#1a7e40",
+          color: "#b308aa",
+          fillColor: "#df68cf",
           weight: 1,
           fillOpacity: 0.7
         }),
@@ -389,8 +481,9 @@ fetch("data/Grunnskoler.geojson")
       }
     });
 
-    layerControl.addOverlay(grunnskoleLayer, "Grunnskoler");
-    console.log("Grunnskoler lastet:", data.features?.length ?? 0);
+    grunnskoleLayer.addTo(map);
+layerControl.addOverlay(grunnskoleLayer, "Grunnskoler");
+console.log("Grunnskoler lastet:", data.features?.length ?? 0);
   })
   .catch((err) => console.error("Feil ved lasting av Grunnskoler:", err));
 
@@ -463,6 +556,7 @@ fetch("data/Sivilforsvarsdistrikter.geojson")
       }
     });
 
+    sivilLayer.addTo(map);
     layerControl.addOverlay(sivilLayer, "Sivilforsvarsdistrikter");
     console.log("Sivilforsvarsdistrikter lastet:", data.features?.length ?? 0);
   })
@@ -505,19 +599,19 @@ Promise.all([
     emergencyAllFeatures = [...policeFeatures, ...fireFeatures, ...hospitalFeatures];
 
     emergencyLayer_police_station.addData({
-      type: "FeatureCollection",
-      features: policeFeatures
-    }).addTo(map);
+  type: "FeatureCollection",
+  features: policeFeatures
+});
 
-    emergencyLayer_fire_station.addData({
-      type: "FeatureCollection",
-      features: fireFeatures
-    }).addTo(map);
+emergencyLayer_fire_station.addData({
+  type: "FeatureCollection",
+  features: fireFeatures
+});
 
-    emergencyLayer_hospital.addData({
-      type: "FeatureCollection",
-      features: hospitalFeatures
-    }).addTo(map);
+emergencyLayer_hospital.addData({
+  type: "FeatureCollection",
+  features: hospitalFeatures
+});
 
     console.log("Beredskapsressurser lastet:", emergencyAllFeatures.length);
   })
@@ -533,9 +627,24 @@ map.on("click", async (e) => {
 
   if (filterCircle) map.removeLayer(filterCircle);
   filterCircle = L.circle(e.latlng, { radius: RADIUS_METERS }).addTo(map);
+  filterCircle.bringToBack();
 
   if (clickMarker) map.removeLayer(clickMarker);
-  clickMarker = L.circleMarker(e.latlng, { radius: 6, weight: 2 }).addTo(map);
+  clickMarker = L.circleMarker(e.latlng, {
+    radius: 6,
+    weight: 2,
+    color: "#111",
+    fillColor: "#ffffff",
+    fillOpacity: 0.95
+  }).addTo(map);
+
+  clickMarker.bindTooltip("Valgt punkt", {
+    direction: "top",
+    offset: [0, -6],
+    opacity: 0.95
+  });
+
+  addTooltipAndHover(clickMarker, null);
 
   const emergencyWithin = emergencyAllFeatures.filter((f) => {
     const coords = f?.geometry?.coordinates;
@@ -544,8 +653,12 @@ map.on("click", async (e) => {
     return e.latlng.distanceTo(p) <= RADIUS_METERS;
   });
 
-  emergencyFilteredLayer.clearLayers();
-  emergencyFilteredLayer.addData({ type: "FeatureCollection", features: emergencyWithin }).addTo(map);
+ emergencyFilteredLayer.clearLayers();
+emergencyFilteredLayer.addData({
+  type: "FeatureCollection",
+  features: emergencyWithin
+}).addTo(map);
+emergencyFilteredLayer.bringToFront();
 
   const nearestEmergency = nearestEmergencyFrom(e.latlng);
 
@@ -560,7 +673,26 @@ map.on("click", async (e) => {
 
   if (nearestEmergency) {
     const emergencyType = nearestEmergency.feature?.properties?.type;
-    nearestEmergencyMarker = L.circleMarker(nearestEmergency.latlng, styleEmergency(emergencyType, true)).addTo(map);
+    const emergencyName = nearestEmergency.feature?.properties?.name ?? "Ukjent navn";
+
+    nearestEmergencyMarker = L.circleMarker(
+      nearestEmergency.latlng,
+      styleEmergency(emergencyType, true)
+    ).addTo(map);
+    nearestEmergencyMarker.bringToFront();
+
+    nearestEmergencyMarker.bindPopup(`
+      <b>Nærmeste beredskap</b><br>
+      Type: ${emergencyLabel(emergencyType)}<br>
+      Navn: ${emergencyName}<br>
+      Avstand: ${(nearestEmergency.distanceMeters / 1000).toFixed(1)} km
+    `);
+
+    addTooltipAndHover(
+      nearestEmergencyMarker,
+      `${emergencyLabel(emergencyType)}: ${emergencyName}`
+    );
+
     nearestEmergencyLine = L.polyline([e.latlng, nearestEmergency.latlng], {
       weight: 2,
       dashArray: "6 6",
@@ -604,6 +736,8 @@ map.on("click", async (e) => {
       };
 
       shelterDbFilteredLayer.addData(withinFC).addTo(map);
+shelterDbFilteredLayer.bringToFront();
+
     }
   } else {
     console.warn("Supabase ikke lastet – tilfluktsrom-filter fra DB er deaktivert.");
@@ -666,6 +800,19 @@ map.on("click", async (e) => {
           fillColor: "#ffd54f",
           fillOpacity: 0.95
         }).addTo(map);
+        nearestMarker.bringToFront();
+
+        nearestMarker.bindPopup(`
+          <b>Nærmeste tilfluktsrom</b><br>
+          Adresse: ${nearestShelter.adresse ?? "(mangler)"}<br>
+          Plasser: ${nearestShelter.plasser ?? "?"}<br>
+          Avstand: ${(nearestShelter.avstand_m / 1000).toFixed(1)} km
+        `);
+
+        addTooltipAndHover(
+          nearestMarker,
+          `${nearestShelter.adresse ?? "Tilfluktsrom"} (${nearestShelter.plasser ?? "?"} plasser)`
+        );
 
         nearestLine = L.polyline([e.latlng, nearestLatLng], {
           weight: 3,
