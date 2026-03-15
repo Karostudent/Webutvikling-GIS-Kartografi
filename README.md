@@ -1,4 +1,6 @@
 # GIS Beredskapskart – Evakuering av skoleelever
+Gruppe 2
+Oskar Kirkbride, Elise Fjeldstad, Emma Wolden, Helle Aanonsen, Karoline Aas-Mehren, Milana Dubkova.
 
 ## Problemstilling og TLDR
 
