@@ -58,7 +58,6 @@ Dokumenterer hele GIS-arbeidsflyten:
 - kart over svake områder  
 - rasteranalyse (terreng og helning)
 
-
 ---
 
 ## Prosjektstruktur
