@@ -409,8 +409,10 @@ git clone <repo-url>
 cd <repo-mappe>
 
 2. Konfigurer Supabase-tilkobling
+
 Prosjektet bruker Supabase for de dynamiske romlige spørringene.
-Før du kjører applikasjonen må du legge til en fil "config.js" i prosjektet, som inneholder gyldig URL og nøkkel. Dette oppgis i Canvas-innleveringen for Oppgave 2. 
+Før du kjører applikasjonen må du legge til en fil "config.js" i prosjektet, som inneholder gyldig URL og nøkkel. Dette oppgis i .zip-fila for innleveringen av denne besvarelsen.  
+
 Eksempel:
 window.APP_CONFIG = {
  SUPABASE_URL: "DIN_SUPABASE_URL",
@@ -429,10 +431,10 @@ For å kjøre rasteranalysen:
 Notebooken er avhengig av akkurat dette filnavnet og plasseringen.
 
 4. Start lokal server
-Det holder å bruke en enkel lokal webserver, for eksempel:
-npx live-server
+- Det holder å bruke en enkel lokal webserver, for eksempel:
+- npx live-server
 eller:
-python -m http.server 8080
+- python -m http.server 8080
 
 5. Åpne webkartet
 Åpne nettleseren og gå til:
@@ -449,8 +451,8 @@ index.html
 
 ## Resultatfiler
 Notebooken genererer blant annet:
-outputs/district_coverage_summary.csv
-outputs/dekning_kart.html
+- outputs/district_coverage_summary.csv
+- outputs/dekning_kart.html
 Disse filene dokumenterer henholdsvis aggregert distriktsanalyse og interaktiv dekningvisualisering.
 
 
@@ -462,18 +464,18 @@ Samtidig finnes det klare begrensninger. Analysen er basert på luftlinjeavstand
 
 ## Videre arbeid
 Aktuelle forbedringer i prosjektet kan være:
-nettverksanalyse basert på veinett og reisetid
-kapasitetsanalyse der antall elevplasser sammenlignes med antall tilgjengelige tilfluktsromsplasser
-mer fullstendig rasteranalyse koblet til terreng og tilgjengelighet
-tydeligere distriktsnavn og bedre etiketter i webkartet
-filtrering og analyse direkte på skoleobjekter i kartet
+ - nettverksanalyse basert på veinett og reisetid
+ - kapasitetsanalyse der antall elevplasser sammenlignes med antall tilgjengelige tilfluktsromsplasser
+ - mer effektiv terrenganalyse, for eksempel ved bruk av API eller mindre rasterutsnitt
+ - tydeligere distriktsnavn og bedre etiketter i webkartet
+ - filtrering og analyse direkte på skoleobjekter i kartet
 
 
 ## Leveranseoversikt
 Prosjektet inneholder:
-et Leaflet-basert webkart
-lokale geografiske datasett i GeoJSON
-dynamiske romlige spørringer via Supabase/PostGIS
-en notebook med dokumentert romlig analyse
-resultatfiler eksportert fra notebook
-README med beskrivelse av datakilder, arkitektur, analyser og refleksjon
+ - et Leaflet-basert webkart
+ - lokale geografiske datasett i GeoJSON
+ - dynamiske romlige spørringer via Supabase/PostGIS
+ - en notebook med dokumentert romlig analyse
+ - resultatfiler eksportert fra notebook
+ - README med beskrivelse av datakilder, arkitektur, analyser og refleksjon
