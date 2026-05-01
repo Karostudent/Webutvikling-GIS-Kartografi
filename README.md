@@ -252,6 +252,8 @@ Dette gjør kartet til mer enn en ren visning; det fungerer også som et enkelt 
 ![Demo av webkartet](docs/Demo.gif)
 
 
+Video: https://youtu.be/WQFyutZI9Fg
+
 # Oppgave 2 – GIScience og romlig analyse
 
 ## Del A: Notebook
