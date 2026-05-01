@@ -18,7 +18,10 @@
     </div>
 
     <div id="results" class="panel">
-      <b>Ressurser innen <span id="radiusLabel">5 000</span> m radius:</b>
+      <div style="margin-bottom: 10px;">
+        <b>Ressurser innen <span id="radiusLabel">5 000</span> m radius:</b><br>
+        <input type="range" id="radiusSlider" min="500" max="20000" step="500" value="5000" style="width: 100%; margin-top: 5px;">
+      </div>
       <div id="resultsList">Klikk i kartet for å søke.</div>
     </div>
   </div>

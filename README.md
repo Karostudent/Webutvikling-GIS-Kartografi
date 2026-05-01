@@ -143,6 +143,7 @@ Prosjektet kombinerer tre nivåer:
  - layer control
  - popup og tooltip
  - klikkbasert analyse
+ - dynamisk justering av analysens radius via slider
 
 ### 2. Romlig database (Supabase/PostGIS)
 Tilfluktsrom er lagret i databasen som tabellen `shelters`.
@@ -231,6 +232,7 @@ Målet i Oppgave 1 er å bygge et fungerende webkart som kombinerer statiske geo
  - popups og tooltips
  - datadrevet styling av punkter og polygoner
  - dynamisk analyse ved klikk i kartet
+ - dynamisk justering av søkeradius (500m - 20km) via slider i resultatpanelet
  - visning av nærmeste tilfluktsrom og øvrige objekter innen radius
 
 
@@ -242,6 +244,7 @@ Når brukeren klikker i kartet:
  - alle tilfluktsrom innen radius hentes ut
  - nærmeste beredskapsressurs markeres
  - resultater presenteres i egne informasjonsfelt
+ - radius kan når som helst justeres dynamisk via en slider, noe som oppdaterer resultater og sirkel i sanntid
 
 Dette gjør kartet til mer enn en ren visning; det fungerer også som et enkelt analyseverktøy.
 

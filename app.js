@@ -20,15 +20,31 @@ const sbClient =
 
 const START_CENTER = [64.5, 12.0];
 const START_ZOOM = 5;
-const RADIUS_METERS = 5000;
+let RADIUS_METERS = 5000;
 
 /******************************************************
  * KARTOPPSETT
  ******************************************************/
 
 const radiusLabelEl = document.getElementById("radiusLabel");
+const radiusSliderEl = document.getElementById("radiusSlider");
 if (radiusLabelEl) {
   radiusLabelEl.textContent = RADIUS_METERS.toLocaleString("nb-NO");
+}
+
+if (radiusSliderEl) {
+  radiusSliderEl.addEventListener("input", (e) => {
+    RADIUS_METERS = parseInt(e.target.value, 10);
+    if (radiusLabelEl) {
+      radiusLabelEl.textContent = RADIUS_METERS.toLocaleString("nb-NO");
+    }
+  });
+  
+  radiusSliderEl.addEventListener("change", () => {
+    if (clickMarker) {
+      runSpatialAnalysis(clickMarker.getLatLng());
+    }
+  });
 }
 
 const map = L.map("map").setView(START_CENTER, START_ZOOM);
