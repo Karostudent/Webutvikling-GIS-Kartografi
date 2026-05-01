@@ -464,18 +464,18 @@ Samtidig finnes det klare begrensninger. Analysen er basert på luftlinjeavstand
 
 ## Videre arbeid
 Aktuelle forbedringer i prosjektet kan være:
-- nettverksanalyse basert på veinett og reisetid
-- kapasitetsanalyse der antall elevplasser sammenlignes med antall tilgjengelige tilfluktsromsplasser
-- mer effektiv terrenganalyse, for eksempel ved bruk av API eller mindre rasterutsnitt
-- tydeligere distriktsnavn og bedre etiketter i webkartet
-- filtrering og analyse direkte på skoleobjekter i kartet
+ - nettverksanalyse basert på veinett og reisetid
+ - kapasitetsanalyse der antall elevplasser sammenlignes med antall tilgjengelige tilfluktsromsplasser
+ - mer effektiv terrenganalyse, for eksempel ved bruk av API eller mindre rasterutsnitt
+ - tydeligere distriktsnavn og bedre etiketter i webkartet
+ - filtrering og analyse direkte på skoleobjekter i kartet
 
 
 ## Leveranseoversikt
 Prosjektet inneholder:
-- et Leaflet-basert webkart
-- lokale geografiske datasett i GeoJSON
-- dynamiske romlige spørringer via Supabase/PostGIS
-- en notebook med dokumentert romlig analyse
-- resultatfiler eksportert fra notebook
-- README med beskrivelse av datakilder, arkitektur, analyser og refleksjon
+ - et Leaflet-basert webkart
+ - lokale geografiske datasett i GeoJSON
+ - dynamiske romlige spørringer via Supabase/PostGIS
+ - en notebook med dokumentert romlig analyse
+ - resultatfiler eksportert fra notebook
+ - README med beskrivelse av datakilder, arkitektur, analyser og refleksjon
